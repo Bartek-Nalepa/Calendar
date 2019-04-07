@@ -3,6 +3,8 @@ package com.calendar;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
+import org.devio.rn.splashscreen.SplashScreenReactPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -37,7 +39,10 @@ public class MainApplication extends NavigationApplication {
         return Arrays.<ReactPackage>asList(
         new VectorIconsPackage(),
         new SQLitePluginPackage(),   // register SQLite Plugin here
-        new MainReactPackage()
+        new MainReactPackage(),
+            new ReactNativePushNotificationPackage(),
+            new SplashScreenReactPackage()
+
         );
     }
 

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Alert, Button, TouchableOpacity, Text, View} from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 import {styles} from './Style'
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import {Navigation} from "react-native-navigation";
@@ -21,9 +22,10 @@ export default class Calendar extends Component<Props> {
         };
     };
 
-componentDidMount = () => {
-  this.createTable()
-};
+    componentDidMount = () => {
+        SplashScreen.hide();
+        this.createTable()
+    };
 
     createTable() {
         const query = 'CREATE TABLE `calendar` (`day` INTEGER, `month` INTEGER, `year` INTEGER,`time` TEXT, `note` TEXT, `notifications` BOOLEAN)';
@@ -36,18 +38,17 @@ componentDidMount = () => {
     renderFirstWeek = () => {
         let monthNumber = this.state.currentMonth;
         let firstDayOfMonth = (new Date(`${monthNumber + 1}'.01.'${this.state.currentYear}`)).getDay();
-        console.log(firstDayOfMonth );
+        console.log(firstDayOfMonth);
         let howManyDaysInFirstWeekArr = [];
         let i = firstDayOfMonth;
         let j = 0;
-        if(firstDayOfMonth !== 0) {
+        if (firstDayOfMonth !== 0) {
             while (i <= 7) {
                 howManyDaysInFirstWeekArr[j] = j + 1;
                 i++;
                 j++;
             }
-        }
-        else{
+        } else {
             howManyDaysInFirstWeekArr[j] = j + 1
         }
         return howManyDaysInFirstWeekArr.map((dayItem, index) => {
@@ -69,11 +70,11 @@ componentDidMount = () => {
         let monthNumber = this.state.currentMonth;
         let firstDayOfMonth = (new Date(`${monthNumber + 1}'.01.'${this.state.currentYear}`)).getDay();
         let howManyDaysInFirstWeek = 0;
-        if(firstDayOfMonth !== 0) {
+        if (firstDayOfMonth !== 0) {
             for (let i = firstDayOfMonth; i <= 7; i++) {
                 howManyDaysInFirstWeek = howManyDaysInFirstWeek + 1;
             }
-        }else {
+        } else {
             howManyDaysInFirstWeek = 1
         }
 
