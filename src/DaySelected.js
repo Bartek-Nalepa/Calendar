@@ -5,6 +5,7 @@ import {Button, CheckBox, Header} from 'react-native-elements';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+var PushNotification = require('react-native-push-notification');
 var SQLite = require('react-native-sqlite-storage');
 var db = SQLite.openDatabase({name: 'DataBase.db', createFromLocation: 1});
 export default class DaySelected extends Component<Props> {
@@ -20,21 +21,41 @@ export default class DaySelected extends Component<Props> {
             time: '',
             timeInHours: (new Date()).getHours(),
             timeInMinutes: (new Date()).getMinutes(),
+            notifications_id: 0,
             day: props.day,
             month: props.month,
             year: props.year,
         };
     };
 
-    makeInitialStates(){
-        this.setState({note: '',
-            checked: false,
-            timeInHours: (new Date()).getHours(),
-            timeInMinutes: (new Date()).getMinutes()})
+
+    removeNotifications(id) {
+        PushNotification.cancelLocalNotifications({id: `${id}`});
     }
+
+    createNotifications(message, id, notifications_time) {
+        this.setState({notifications_id: id});
+        PushNotification.localNotificationSchedule({
+            title: "Soon",
+            message: message,
+            date: notifications_time,
+            id: `${id}`
+        });
+    }
+
+    makeInitialStates() {
+        this.setState({
+            note: '',
+            checked: false,
+            notifications_id: 0,
+            timeInHours: (new Date()).getHours(),
+            timeInMinutes: (new Date()).getMinutes()
+        })
+    }
+
     readDb() {
         db.transaction((tx) => {
-            tx.executeSql(`SELECT * FROM calendar WHERE day = ${this.state.day} AND month = ${this.state.month} AND year = ${this.state.year} ORDER BY time`, [], (tx, results) => {
+            tx.executeSql(` SELECT * FROM calendar WHERE day = ${this.state.day} AND month = ${this.state.month} AND year = ${this.state.year} ORDER BY time`, [], (tx, results) => {
                 var len = results.rows.length;
                 var tab = [];
                 for (let i = 0; i < len; i++) {
@@ -51,13 +72,14 @@ export default class DaySelected extends Component<Props> {
 
     renderActivity = ({item, index}) => {
         return <GestureRecognizer
-            onSwipe={(direction, state) => this.onSwipeLeft(direction, state, item.day, item.month, item.year, item.time, item.note, index)}>
+            onSwipe={(direction, state) => this.onSwipeLeft(direction, state, item.day, item.month, item.year, item.time, item.note, index, item.notifications_id)}>
             <TouchableOpacity onPress={() => {
                 var hours = parseFloat(item.time.slice(0, 2));
                 var minutes = parseFloat(item.time.slice(3, 5));
                 this.setState({
                     note: item.note,
                     checked: item.notifications,
+                    notifications_id: item.notifications_id,
                     time: item.item,
                     timeInHours: hours,
                     timeInMinutes: minutes
@@ -96,9 +118,17 @@ export default class DaySelected extends Component<Props> {
 
     setEditModalVisible(visible) {
         this.setState({editModalVisible: visible})
-    };
+    }
+    ;
+
+    getUniqueId() {
+        let id = Date.now();
+        this.setState({notifications_id: id});
+        return id;
+    }
 
     addToListAndDb() {
+        let id = this.getUniqueId();
         let list = this.state.list;
         let list2 = [];
         list2 = list;
@@ -114,35 +144,38 @@ export default class DaySelected extends Component<Props> {
             time: `${this.state.timeInHours}:${minutes}`,
             note: this.state.note,
             notifications: this.state.checked,
+            notifications_id: id
         });
-        console.log(minutes);
-        let query = `INSERT INTO calendar (day, month, year,time, note, notifications) values (${this.state.day}, ${this.state.month}, ${this.state.year},'${this.state.timeInHours}:${minutes}', '${this.state.note}', '${this.state.checked}')`;
+        let query = `INSERT INTO calendar (day, month, year,time, note, notifications, notifications_id) values (${this.state.day}, ${this.state.month}, ${this.state.year},'${this.state.timeInHours}:${minutes}', '${this.state.note}', '${this.state.checked}', ${id})`;
         this.setState({list: list2,});
-        this.makeInitialStates();
+
         return db.executeSql(query);
-    };
+    }
+    ;
 
     editListAndDb() {
         let minutes = this.state.timeInMinutes;
         if (this.state.timeInMinutes < 10) {
             minutes = "0" + this.state.timeInMinutes;
         }
-        const query = `UPDATE calendar SET note = '${this.state.note}', time = '${this.state.timeInHours}:${minutes}', notifications = '${this.state.checked}' WHERE day = ${this.state.day} AND month = ${this.state.month} AND year = ${this.state.year} AND notifications = '${this.state.checked}'`;
+        const query = `UPDATE calendar SET note = '${this.state.note}', time = '${this.state.timeInHours}:${minutes}', notifications = '${this.state.checked}', notifications_id = ${this.state.notifications_id} WHERE day = ${this.state.day} AND month = ${this.state.month} AND year = ${this.state.year} AND notifications = '${this.state.checked}'`;
         return db.executeSql(query);
-    };
+    }
+    ;
 
     deleteFromDb(day, month, year, time, note) {
         const query = `DELETE FROM calendar WHERE day = ${day} AND month = ${month} AND year = ${year} AND time = '${time}' AND note = '${note}'`;
         return db.executeSql(query)
     }
 
-    onSwipeLeft(gestureName, gestureState, day, month, year, time, note, index) {
+    onSwipeLeft(gestureName, gestureState, day, month, year, time, note, index, notifications_id) {
         const {SWIPE_LEFT} = swipeDirections;
         this.setState({gestureName: gestureName});
         switch (gestureName) {
             case SWIPE_LEFT:
                 this.deleteFromDb(day, month, year, time, note);
                 this.readDb();
+                this.removeNotifications(notifications_id);
                 break;
         }
     }
@@ -167,8 +200,12 @@ export default class DaySelected extends Component<Props> {
                                 />}
                                 centerComponent={{text: 'Add activity', style: {color: '#fff'}}}
                                 rightComponent={<Button title={"Done"} onPress={() => {
+                                    let notifications_time = new Date(this.state.year, this.state.month, this.state.day, this.state.timeInHours - 1, this.state.timeInMinutes);
+                                    console.log(notifications_time);
                                     this.addToListAndDb();
-                                    this.setModalVisible(false)
+                                    this.setModalVisible(false);
+                                    this.state.checked ? this.createNotifications(this.state.note.slice(0, 45), this.state.notifications_id, notifications_time) : null;
+                                    this.makeInitialStates();
                                 }}/>}
                             />
 
@@ -233,9 +270,14 @@ export default class DaySelected extends Component<Props> {
                             />}
                             centerComponent={{text: 'Edit', style: {color: '#fff'}}}
                             rightComponent={<Button title={"Done"} onPress={() => {
-                                this.editListAndDb();
+                                let notifications_time = new Date(this.state.year, this.state.month, this.state.day, this.state.timeInHours - 1, this.state.timeInMinutes);
+                                this.removeNotifications(this.state.notifications_id);
                                 this.setEditModalVisible(false);
+                                this.editListAndDb();
+                                this.state.checked ? this.createNotifications(this.state.note.slice(0, 45), this.state.notifications_id, notifications_time) : null;
+
                                 this.readDb();
+                                this.makeInitialStates();
                             }}/>}
                         />
 

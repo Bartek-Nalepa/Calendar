@@ -28,7 +28,7 @@ export default class Calendar extends Component<Props> {
     };
 
     createTable() {
-        const query = 'CREATE TABLE `calendar` (`day` INTEGER, `month` INTEGER, `year` INTEGER,`time` TEXT, `note` TEXT, `notifications` BOOLEAN)';
+        const query = 'CREATE TABLE `calendar` (`day` INTEGER, `month` INTEGER, `year` INTEGER,`time` TEXT, `note` TEXT, `notifications` BOOLEAN, `notifications_id` INTEGER)';
         // const query = 'CREATE TABLE `devices` ( `name` TEXT, `place` TEXT,`command` TEXT)';
         // const query = 'INSERT INTO `tests` (`id`, `json`, `data`) VALUES (5,`caly`,`dzis`)';
         // const query = 'ALTER TABLE tests ADD data TEXT';
