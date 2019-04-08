@@ -133,20 +133,23 @@ export default class DaySelected extends Component<Props> {
         let list2 = [];
         list2 = list;
         var minutes = this.state.timeInMinutes;
+        var hours = this.state.timeInHours;
         if (this.state.timeInMinutes < 10) {
             minutes = "0" + this.state.timeInMinutes;
-
+        }
+        if (this.state.timeInHours < 10){
+            hours = "0" + this.state.timeInHours;
         }
         list2.push({
             day: this.state.day,
             month: this.state.month,
             year: this.state.year,
-            time: `${this.state.timeInHours}:${minutes}`,
+            time: `${hours}:${minutes}`,
             note: this.state.note,
             notifications: this.state.checked,
             notifications_id: id
         });
-        let query = `INSERT INTO calendar (day, month, year,time, note, notifications, notifications_id) values (${this.state.day}, ${this.state.month}, ${this.state.year},'${this.state.timeInHours}:${minutes}', '${this.state.note}', '${this.state.checked}', ${id})`;
+        let query = `INSERT INTO calendar (day, month, year,time, note, notifications, notifications_id) values (${this.state.day}, ${this.state.month}, ${this.state.year},'${hours}:${minutes}', '${this.state.note}', '${this.state.checked}', ${id})`;
         this.setState({list: list2,});
 
         return db.executeSql(query);

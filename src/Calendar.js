@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Alert, Button, TouchableOpacity, Text, View} from 'react-native';
+import {Alert, Picker, TouchableOpacity, Text, View} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import {styles} from './Style'
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
@@ -81,6 +81,11 @@ export default class Calendar extends Component<Props> {
         let howManyDaysInMiddleArr = [];
         let j = 0;
         while (howManyDaysInFirstWeek < this.state.monthsArr[monthNumber]) {
+            if (this.state.currentYear % 4 === 0) {
+                this.state.monthsArr[1] = 29;
+            } else {
+                this.state.monthsArr[1] = 28;
+            }
             howManyDaysInMiddleArr[j] = howManyDaysInFirstWeek + 1;
             howManyDaysInFirstWeek++;
             j++;
