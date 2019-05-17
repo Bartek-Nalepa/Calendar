@@ -227,52 +227,54 @@ export default class Calendar extends Component<Props> {
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.monthAndYearContainer}>
-                    <GestureRecognizer
-                        onSwipe={(direction, state) => this.onSwipeMonths(direction, state)}>
+
+                <GestureRecognizer
+                    onSwipe={(direction, state) => this.onSwipeMonths(direction, state)}>
+                    <View style={styles.monthAndYearContainer}>
                         <TouchableOpacity style={styles.selectMonth}>
                             <Text>{this.displayMonth(this.state.currentMonth)}</Text>
                         </TouchableOpacity>
-                    </GestureRecognizer>
 
-                    <GestureRecognizer
-                        onSwipe={(direction, state) => this.onSwipeYears(direction, state)}>
-                        <TouchableOpacity style={styles.selectYear}>
-                            <Text>{this.state.currentYear}</Text>
-                        </TouchableOpacity>
-                    </GestureRecognizer>
-                </View>
 
-                <View style={styles.weekDayContainer}>
+                        {/*<GestureRecognizer*/}
+                        {/*    onSwipe={(direction, state) => this.onSwipeYears(direction, state)}>*/}
+                            <TouchableOpacity style={styles.selectYear}>
+                                <Text>{this.state.currentYear}</Text>
+                            </TouchableOpacity>
+                        {/*</GestureRecognizer>*/}
+                    </View>
+                    <View style={styles.weekDayContainer}>
 
-                    <View style={styles.weekDaySquareContainer}>
-                        <Text> Mo.</Text>
+                        <View style={styles.weekDaySquareContainer}>
+                            <Text> Mo.</Text>
+                        </View>
+                        <View style={styles.weekDaySquareContainer}>
+                            <Text> Tu.</Text>
+                        </View>
+                        <View style={styles.weekDaySquareContainer}>
+                            <Text> We.</Text>
+                        </View>
+                        <View style={styles.weekDaySquareContainer}>
+                            <Text> Th.</Text>
+                        </View>
+                        <View style={styles.weekDaySquareContainer}>
+                            <Text> Fr.</Text>
+                        </View>
+                        <View style={styles.weekDaySquareContainer}>
+                            <Text> Sa.</Text>
+                        </View>
+                        <View style={styles.weekDaySquareContainer}>
+                            <Text> Su.</Text>
+                        </View>
                     </View>
-                    <View style={styles.weekDaySquareContainer}>
-                        <Text> Tu.</Text>
+                    <View style={styles.firstWeekContainer}>
+                        {this.renderFirstWeek()}
                     </View>
-                    <View style={styles.weekDaySquareContainer}>
-                        <Text> We.</Text>
+                    <View style={styles.middleWeekContainer}>
+                        {this.renderMiddleWeeks()}
                     </View>
-                    <View style={styles.weekDaySquareContainer}>
-                        <Text> Th.</Text>
-                    </View>
-                    <View style={styles.weekDaySquareContainer}>
-                        <Text> Fr.</Text>
-                    </View>
-                    <View style={styles.weekDaySquareContainer}>
-                        <Text> Sa.</Text>
-                    </View>
-                    <View style={styles.weekDaySquareContainer}>
-                        <Text> Su.</Text>
-                    </View>
-                </View>
-                <View style={styles.firstWeekContainer}>
-                    {this.renderFirstWeek()}
-                </View>
-                <View style={styles.middleWeekContainer}>
-                    {this.renderMiddleWeeks()}
-                </View>
+
+                </GestureRecognizer>
             </View>
         );
     }
