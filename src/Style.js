@@ -18,10 +18,12 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     monthAndYearContainer: {
-        marginTop: 10,
-        marginBottom: 10,
+        backgroundColor: '#e0e0eb',
+        marginHorizontal: 50,
+        marginVertical: 15,
+        borderRadius: 50,
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-evenly',
     },
     selectMonth: {
         width: 160,
@@ -35,8 +37,8 @@ export const styles = StyleSheet.create({
     selectYear: {
         width: 110,
         height: 35,
-        backgroundColor: '#e0e0eb',
         borderRadius: 50,
+        fontWeight: "700",
         alignItems: 'center',
         justifyContent: 'center',
     },

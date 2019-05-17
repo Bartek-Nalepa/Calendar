@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Alert, Picker, TouchableOpacity, Text, View} from 'react-native';
+import {Alert, Picker, Button, TouchableOpacity, Text, View} from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import {styles} from './Style'
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
@@ -14,12 +14,27 @@ export default class Calendar extends Component<Props> {
         this.state = {
             foo: 9000, // power level over 9000!!!
             itsOver9000: 9000,
+            count: 0,
             gestureName: '',
+            PickerSelectedVal: 'asd',
             currentDate: new Date(),
             currentMonth: (new Date()).getMonth(),
             currentYear: (new Date()).getFullYear(),
             monthsArr: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
         };
+    };
+
+    renderYears = () => { // PICKER
+        var arr = [];
+        var year = (new Date()).getFullYear() - 5;
+        for (let i = 0; i <= 10; i++) {
+            arr[i] = year.toString();
+            year++;
+        }
+        return arr.map((a, index) => {
+            return <Picker.Item label={`${a}`} value={`${a}`}/>
+        })
+
     };
 
     componentDidMount = () => {
@@ -116,7 +131,7 @@ export default class Calendar extends Component<Props> {
             case 0:
                 return "January";
             case 1:
-                return "Febuary";
+                return "February";
             case 2:
                 return "March";
             case 3:
@@ -227,21 +242,21 @@ export default class Calendar extends Component<Props> {
     render() {
         return (
             <View style={styles.container}>
-
                 <GestureRecognizer
                     onSwipe={(direction, state) => this.onSwipeMonths(direction, state)}>
                     <View style={styles.monthAndYearContainer}>
                         <TouchableOpacity style={styles.selectMonth}>
-                            <Text>{this.displayMonth(this.state.currentMonth)}</Text>
+                            <Text style={{color: 'black'}}>{this.displayMonth(this.state.currentMonth)}</Text>
                         </TouchableOpacity>
 
-
-                        {/*<GestureRecognizer*/}
-                        {/*    onSwipe={(direction, state) => this.onSwipeYears(direction, state)}>*/}
-                            <TouchableOpacity style={styles.selectYear}>
-                                <Text>{this.state.currentYear}</Text>
-                            </TouchableOpacity>
-                        {/*</GestureRecognizer>*/}
+                        <Picker
+                            selectedValue={this.state.currentYear}
+                            style={styles.selectYear}
+                            onValueChange={(itemValue, itemIndex) =>
+                                this.setState({currentYear: itemValue})}>
+                        <Picker.Item label={`${this.state.currentYear}`} value={`${this.state.currentYear}`}/>
+                            {this.renderYears()}
+                        </Picker>
                     </View>
                     <View style={styles.weekDayContainer}>
 
